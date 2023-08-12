@@ -1,10 +1,5 @@
 package org.example;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -12,25 +7,14 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.*;
-import org.springframework.http.MediaType;
-import org.springframework.http.client.ClientHttpRequest;
-import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.web.client.RequestCallback;
-import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import javax.print.DocFlavor;
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static org.example.StaticRestTemplate.rest;
+
 
 @SpringBootApplication
 public class KataLastProject {
@@ -48,16 +32,21 @@ public class KataLastProject {
     }
 
     @Bean
-    public CommandLineRunner run(RestTemplate restTemplate) throws Exception {
-        return args -> {
-            ResponseEntity<User[]> response = restTemplate.getForEntity(
-                    url, User[].class);
-            User[] users = response.getBody();
-            for (User user : users) {
-                log.info(user.toString());
-            }
-        };
+    public String head() throws Exception {
+
+        ResponseEntity<User[]> response = rest.getForEntity(
+                url, User[].class);
+        response.getHeaders();
+        List<String> header = Objects.requireNonNull(response.getHeaders().get("Set-Cookie")).stream().toList();
+        System.out.println(header.get(0));
+        return header.get(0);
     }
+
+    @Bean
+    public void run() throws Exception {
+        System.out.println(head());
+    }
+
 }
 
 //////////////////////////////////////////////////////////////////////////POST
